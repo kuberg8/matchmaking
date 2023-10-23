@@ -1,0 +1,11 @@
+Model Information:
+* title:	Volleyball
+* source:	https://sketchfab.com/3d-models/volleyball-9e82d5dcfcb84c4a939f46d479a91121
+* author:	Yiwen Xiao (https://sketchfab.com/FireFoxStudio)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Volleyball" (https://sketchfab.com/3d-models/volleyball-9e82d5dcfcb84c4a939f46d479a91121) by Yiwen Xiao (https://sketchfab.com/FireFoxStudio) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)

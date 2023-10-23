@@ -11,31 +11,48 @@ export default {
       { hid: 'description', name: 'description', content: '' },
       { name: 'format-detection', content: 'telephone=no' }
     ],
-    link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-    ]
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: [
-  ],
+  css: [], //["@/assets/scss/index.scss"],
+
+  // styleResources: {
+  //   scss: ["@/assets/scss/mixins/index.scss", "@/assets/scss/vars/index.scss"],
+  // },
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [
-  ],
+  plugins: ['~/plugins/three.js'],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
-  buildModules: [
-  ],
+  buildModules: [], //['@nuxtjs/style-resources'],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: [
-  ],
+  modules: [],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    standalone: true,
+    extractCSS: false,
+    filenames: {
+      chunk: ({ isDev }) => (isDev ? '[name].js' : '[id].[contenthash].js')
+    },
+    optimization: {
+      nodeEnv: 'production',
+      runtimeChunk: 'single'
+    },
+    extend(config, ctx) {
+      config.resolve.alias.three$ = 'three/build/three.module.js'
+
+      if (config.module) {
+        config.module.rules.push({
+          test: /\.(glsl)$/i,
+          use: ['raw-loader']
+        })
+      }
+    }
   }
 }

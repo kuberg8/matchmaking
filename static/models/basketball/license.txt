@@ -1,0 +1,11 @@
+Model Information:
+* title:	Basketball
+* source:	https://sketchfab.com/3d-models/basketball-c0265542f9454ae0b84c6df69f967d64
+* author:	Safat_Rules (https://sketchfab.com/Safat_Rules)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Basketball" (https://sketchfab.com/3d-models/basketball-c0265542f9454ae0b84c6df69f967d64) by Safat_Rules (https://sketchfab.com/Safat_Rules) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
