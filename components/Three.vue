@@ -162,5 +162,8 @@ export default {
   object-fit: cover;
   object-position: top left;
   transform: scale(1.1);
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 </style>
