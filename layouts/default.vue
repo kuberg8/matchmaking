@@ -1,7 +1,10 @@
 <template>
   <v-app>
     <header class="header">
-      <h1>MATCHMAKING</h1>
+      <h1 class="header__logo">
+        <v-icon size="42">mdi-basketball</v-icon>
+        MATCHMAKING
+      </h1>
 
       <v-avatar class="yandex__avatar">
         <!-- <v-icon>mdi-account-circle</v-icon> -->
@@ -32,5 +35,11 @@ export default {
   top: 0;
   padding: 0 10vw;
   backdrop-filter: blur(20px);
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+  }
 }
 </style>

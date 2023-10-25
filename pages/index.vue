@@ -15,14 +15,10 @@
     </div>
 
     <v-btn class="arrow__left" @click="switchScren(false)" width="65" height="65">
-      <v-icon size="42">
-        mdi-arrow-left
-      </v-icon>
+      <v-icon size="42"> mdi-arrow-left </v-icon>
     </v-btn>
     <v-btn class="arrow__right" @click="switchScren" width="65" height="65">
-      <v-icon size="42">
-        mdi-arrow-right
-      </v-icon>
+      <v-icon size="42"> mdi-arrow-right </v-icon>
     </v-btn>
   </div>
 </template>
@@ -35,25 +31,24 @@ export default {
       screnIndex: 0,
       screns: [
         {
+          type: 'basketball',
           path: './models/basketball/scene.gltf',
           size: 75,
           background: 'https://cdn.britannica.com/44/193844-050-11485B18/ball-net-basketball-game-arena.jpg'
         },
         {
+          type: 'volleyball',
           path: './models/volleyball/scene.gltf',
           size: 95,
-          background: 'https://c1.wallpaperflare.com/preview/788/874/537/network-beach-volleyball-volleyball-sand.jpg',
-          dark: true
+          background: 'https://c1.wallpaperflare.com/preview/788/874/537/network-beach-volleyball-volleyball-sand.jpg'
         },
         {
+          type: 'football',
           path: './models/football/scene.gltf',
           size: 10,
           background: 'https://images.mlssoccer.com/image/private/t_q-best/mls-lafc-prd/k9b0dhvmfqbaqkwl8nvi.jpg'
         }
-      ],
-
-      showForm: false,
-      showTable: false
+      ]
     }
   },
   computed: {
@@ -63,14 +58,12 @@ export default {
   },
   mounted() {
     window.addEventListener('keydown', ({ key }) => {
-      if (!this.showForm && !this.showTable) {
-        switch (key) {
-          case 'ArrowRight':
-            this.switchScren()
-            break
-          case 'ArrowLeft':
-            this.switchScren(false)
-        }
+      switch (key) {
+        case 'ArrowRight':
+          this.switchScren()
+          break
+        case 'ArrowLeft':
+          this.switchScren(false)
       }
     })
   },
