@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="typeof screnIndex === 'number'">
     <Three
       v-for="(scren, i) in screns"
       v-show="i === screnIndex"
@@ -9,46 +9,56 @@
       :background="scren.background"
     />
 
-    <div class="controls">
-      <v-btn elevation="2">Создать</v-btn>
-      <v-btn elevation="2">Найти</v-btn>
+    <div v-if="!dialog" class="controls">
+      <v-btn to="create">Создать</v-btn>
+      <v-btn to="search">Найти</v-btn>
     </div>
 
-    <v-btn class="arrow__left" @click="switchScren(false)" width="65" height="65">
+    <v-btn v-if="!dialog" class="arrow__left" @click="switchScren(false)" width="65" height="65">
       <v-icon size="42"> mdi-arrow-left </v-icon>
     </v-btn>
-    <v-btn class="arrow__right" @click="switchScren" width="65" height="65">
+    <v-btn v-if="!dialog" class="arrow__right" @click="switchScren" width="65" height="65">
       <v-icon size="42"> mdi-arrow-right </v-icon>
     </v-btn>
+
+    <v-dialog v-model="dialog" persistent width="1024">
+      <v-card class="main__dialog">
+        <nuxt-child :type="currentScreen.type" @close="close" />
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
+const dialogPages = ['index-Create', 'index-Search']
+const models = [
+  {
+    type: 'basketball',
+    path: './models/basketball/scene.gltf',
+    size: 75,
+    background: 'https://cdn.britannica.com/44/193844-050-11485B18/ball-net-basketball-game-arena.jpg'
+  },
+  {
+    type: 'volleyball',
+    path: './models/volleyball/scene.gltf',
+    size: 95,
+    background: 'https://c1.wallpaperflare.com/preview/788/874/537/network-beach-volleyball-volleyball-sand.jpg'
+  },
+  {
+    type: 'soccer',
+    path: './models/football/scene.gltf',
+    size: 10,
+    background: 'https://images.mlssoccer.com/image/private/t_q-best/mls-lafc-prd/k9b0dhvmfqbaqkwl8nvi.jpg'
+  }
+]
+
 export default {
   name: 'IndexPage',
   data() {
     return {
-      screnIndex: 0,
-      screns: [
-        {
-          type: 'basketball',
-          path: './models/basketball/scene.gltf',
-          size: 75,
-          background: 'https://cdn.britannica.com/44/193844-050-11485B18/ball-net-basketball-game-arena.jpg'
-        },
-        {
-          type: 'volleyball',
-          path: './models/volleyball/scene.gltf',
-          size: 95,
-          background: 'https://c1.wallpaperflare.com/preview/788/874/537/network-beach-volleyball-volleyball-sand.jpg'
-        },
-        {
-          type: 'football',
-          path: './models/football/scene.gltf',
-          size: 10,
-          background: 'https://images.mlssoccer.com/image/private/t_q-best/mls-lafc-prd/k9b0dhvmfqbaqkwl8nvi.jpg'
-        }
-      ]
+      dialog: dialogPages.includes(this.$route.name),
+      screnIndex: null,
+      screns: models
     }
   },
   computed: {
@@ -57,13 +67,17 @@ export default {
     }
   },
   mounted() {
+    this.screnIndex = JSON.parse(localStorage.getItem('screnIndex')) || 0
+
     window.addEventListener('keydown', ({ key }) => {
-      switch (key) {
-        case 'ArrowRight':
-          this.switchScren()
-          break
-        case 'ArrowLeft':
-          this.switchScren(false)
+      if (!this.dialog) {
+        switch (key) {
+          case 'ArrowRight':
+            this.switchScren()
+            break
+          case 'ArrowLeft':
+            this.switchScren(false)
+        }
       }
     })
   },
@@ -82,6 +96,19 @@ export default {
           this.screnIndex--
         }
       }
+
+      localStorage.setItem('screnIndex', this.screnIndex)
+    },
+    close() {
+      this.dialog = false
+      setTimeout(() => {
+        this.$router.push('/')
+      }, 100)
+    }
+  },
+  watch: {
+    '$route.name'(name) {
+      this.dialog = dialogPages.includes(name)
     }
   }
 }
@@ -125,6 +152,28 @@ export default {
     border: 2px solid #fff;
     max-width: calc(100% - 2px);
     max-height: calc(100% - 2px);
+  }
+}
+
+.main__dialog {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+
+  &-head {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &-title {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+  }
+
+  &-close {
+    border-radius: 50%;
+    min-width: 30px !important;
+    width: 30px !important;
+    max-height: 30px;
   }
 }
 </style>
