@@ -62,9 +62,11 @@ export default {
         buttonIcon: 'ya'
       })
         .then(({ handler }) => handler())
-        .then(({ access_token }) => this.getUserData(access_token))
+        .then(({ access_token }) => {
+          this.dialog = false
+          this.getUserData(access_token)
+        })
         .catch((error) => console.log('Обработка ошибки', error))
-        .finally(() => (this.dialog = false))
     },
     initVK() {
       const { Connect, Config, ConnectEvents } = window.SuperAppKit
@@ -86,7 +88,6 @@ export default {
 
             switch (type) {
               case ConnectEvents.OneTapAuthEventsSDK.LOGIN_SUCCESS:
-                console.log(e)
                 const { user } = e.payload
                 this.setUserData({ data: user, provider: e.provider })
                 return false
