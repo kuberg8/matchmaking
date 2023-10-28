@@ -12,13 +12,7 @@
 
     <v-row class="main__table-filter">
       <v-col cols="3">
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Поиск"
-          single-line
-          hide-details
-        ></v-text-field>
+        <v-text-field v-model="search" append-icon="mdi-magnify" label="Поиск" hide-details />
       </v-col>
       <v-col cols="3">
         <v-menu
@@ -34,19 +28,59 @@
           min-width="290px"
         >
           <template v-slot:activator="{ on }">
-            <v-text-field v-model="date" label="Дата" append-icon="mdi-calendar-month" readonly v-on="on"></v-text-field>
+            <v-text-field
+              v-model="date"
+              label="Дата"
+              append-icon="mdi-calendar-month"
+              readonly
+              v-on="on"
+            ></v-text-field>
           </template>
-          <v-date-picker v-model="date" no-title scrollable>
+          <v-date-picker v-model="date" scrollable>
             <v-spacer></v-spacer>
             <v-btn flat color="primary" @click="menu = false">Cancel</v-btn>
             <v-btn flat color="primary" @click="$refs.menu.save(date)">OK</v-btn>
           </v-date-picker>
         </v-menu>
       </v-col>
-      <v-col cols="2" style="margin-left: auto">
+      <v-col>
+        <v-autocomplete :items="['0-17', '18-29', '30-54', '54+']" label="Город" />
+        </v-col>
+      <v-col cols="2" class="main__table-ml-auto main__table-center">
         <v-switch label="Инвентарь"></v-switch>
       </v-col>
+      <v-col cols="1" class="main__table-center">
+        <v-btn @click="moreFilter = !moreFilter" text class="main__table-btn">
+          <v-badge content="2" color="error">
+            <v-icon>mdi-{{ moreFilter ? 'filter-off' : 'filter' }}</v-icon>
+          </v-badge>
+        </v-btn>
+      </v-col>
     </v-row>
+
+    <div v-if="moreFilter">
+      <v-row class="main__table-filter">
+        <v-col>
+          <v-select :items="['0-17', '18-29', '30-54', '54+']" label="Возраст"></v-select>
+        </v-col>
+        <v-col>
+          <v-select :items="['начинающие', 'Любители', 'Профи', 'Высшая лига']" label="Уровень"></v-select>
+        </v-col>
+        <v-col cols="3" class="main__table-rating">
+          Рейтинг
+          <v-icon
+            v-for="star in 5"
+            :key="star"
+            @click.native="setCurrentRating(star)"
+            @mouseover="rating = star"
+            @mouseleave="rating = currentRating"
+            class="main__table-rating-item"
+          >
+            mdi-star{{ rating >= star ? '' : '-outline' }}
+          </v-icon>
+        </v-col>
+      </v-row>
+    </div>
 
     <v-data-table
       :search="search"
@@ -71,9 +105,11 @@
         {{ item.inventory ? 'Имеется' : 'Не имеется' }}
       </template>
     </v-data-table>
+
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="red" variant="text" @click="$emit('close')"> Отмена </v-btn>
+      <v-btn v-if="moreFilter"> Сбросить фильтры </v-btn>
+      <v-btn color="red" @click="$emit('close')"> Отмена </v-btn>
     </v-card-actions>
   </div>
 </template>
@@ -87,6 +123,10 @@ export default {
   data() {
     return {
       defaultMaxCount: 31,
+      currentRating: null,
+      rating: null,
+      moreFilter: false,
+
       headers: [
         {
           text: 'Город',
@@ -148,6 +188,13 @@ export default {
         default:
           return '-'
       }
+    },
+    setCurrentRating(star) {
+      if (this.currentRating == star && star == 1) {
+        this.currentRating = null
+      } else {
+        this.currentRating = star
+      }
     }
   }
 }
@@ -160,6 +207,35 @@ export default {
 
   &-filter {
     margin: 0 15px;
+  }
+
+  &-rating {
+    display: flex;
+    align-items: center;
+
+    &-item {
+      cursor: pointer;
+
+      &:first-of-type {
+        margin-left: 10px;
+      }
+    }
+  }
+
+  &-ml-auto {
+    margin-left: auto;
+  }
+
+  &-center {
+    display: flex;
+    align-items: center;
+  }
+
+  &-btn {
+    border-radius: 50%;
+    min-width: 35px !important;
+    width: 35px !important;
+    height: 35px !important;
   }
 }
 </style>

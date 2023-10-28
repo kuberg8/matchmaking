@@ -6,7 +6,7 @@
         MATCHMAKING
       </h1>
 
-      <v-btn text class="header__login">
+      <v-btn @click="showLogin = true" text class="header__login">
         <v-avatar v-if="false" class="yandex__avatar">
           <v-img class="yandex__avatar-img" src="https://cdn.vuetifyjs.com/images/john.jpg" alt="John"></v-img>
         </v-avatar>
@@ -18,12 +18,23 @@
     <v-main>
       <Nuxt />
     </v-main>
+
+    <LoginForm v-model="showLogin" />
   </v-app>
 </template>
 
 <script>
 export default {
-  name: 'DefaultLayout'
+  name: 'DefaultLayout',
+  data() {
+    return {
+      showLogin: false
+    }
+  },
+  mounted() {
+    // yanedx
+    YaSendSuggestToken(`${process.env.REDIRECT_URI}`)
+  }
 }
 </script>
 

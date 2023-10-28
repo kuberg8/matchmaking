@@ -21,7 +21,7 @@
       <v-icon size="42"> mdi-arrow-right </v-icon>
     </v-btn>
 
-    <v-dialog v-model="dialog" persistent width="1024">
+    <v-dialog v-model="dialog" persistent :width="dialogWidth">
       <v-card class="main__dialog">
         <nuxt-child :type="currentScreen.type" @close="close" />
       </v-card>
@@ -64,6 +64,14 @@ export default {
   computed: {
     currentScreen() {
       return this.screns[this.screnIndex]
+    },
+    dialogWidth() {
+      switch (this.$route.name) {
+        case 'index-Create':
+          return '900'
+        default:
+          return '1024'
+      }
     }
   },
   mounted() {

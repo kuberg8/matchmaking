@@ -13,11 +13,20 @@ export default {
       { hid: 'description', name: 'description', content: '' },
       { name: 'format-detection', content: 'telephone=no' }
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+    script: [
+      { src: 'https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-with-polyfills-latest.js', defer: true },
+      { src: 'https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-token-with-polyfills-latest.js', defer: true }
+    ]
+  },
+
+  env: {
+    CLIENT_ID: process.env.CLIENT_ID,
+    REDIRECT_URI: process.env.REDIRECT_URI
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: [],
+  css: [], //'~/assets/scss/index.scss'
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: ['~/plugins/three.js'],
@@ -47,6 +56,10 @@ export default {
         }
       }
     }
+  },
+
+  server: {
+    host: '0'
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
