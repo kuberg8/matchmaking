@@ -6,8 +6,11 @@
     </h1>
 
     <v-btn id="menu-activator" @click="loginHandler" text class="header__login">
-      <v-avatar v-if="isAuth && getUserAvatarId" class="yandex__avatar">
-        <v-img class="yandex__avatar-img" :src="getAvatar(getUserAvatarId, 'islands-middle')" />
+      <v-avatar v-if="isAuth && getUserAvatarId" :class="{ yandex__avatar: provider === 'ya' }">
+        <v-img
+          :class="{ 'yandex__avatar-img': provider === 'ya' }"
+          :src="getAvatar(getUserAvatarId, 'islands-middle')"
+        />
       </v-avatar>
       <v-avatar v-else>
         <v-icon size="38">mdi-account-circle</v-icon>
@@ -52,7 +55,7 @@
       </v-card>
     </v-menu>
 
-    <LoginForm v-model="showLogin" />
+    <LoginForm v-model="showLogin" :key="isAuth" />
   </header>
 </template>
 
@@ -71,7 +74,7 @@ export default {
   },
   computed: {
     ...mapGetters('user', ['getUserAvatarId', 'getUserDisplayName', 'getUserPhone']),
-    ...mapState('user', ['isAuth'])
+    ...mapState('user', ['isAuth', 'provide'])
   },
   methods: {
     ...mapActions('user', ['logout']),

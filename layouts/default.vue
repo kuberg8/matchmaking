@@ -16,11 +16,11 @@ export default {
   mounted() {
     const token = localStorage.getItem('asset_token')
     if (token) {
-      this.getUserInfo(token)
+      this.getUserData(token)
     }
   },
   methods: {
-    ...mapActions('user', ['getUserInfo'])
+    ...mapActions('user', ['getUserData'])
   }
 }
 </script>

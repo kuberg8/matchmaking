@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 
 export default {
   props: {
@@ -41,7 +41,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions('user', ['getUserInfo']),
+    ...mapMutations('user', ['SET_PROVIDER']),
+    ...mapActions('user', ['getUserData']),
     initYandex() {
       YaSendSuggestToken(`${process.env.REDIRECT_URI}`)
 
@@ -62,57 +63,67 @@ export default {
         buttonIcon: 'ya'
       })
         .then(({ handler }) => handler())
-        .then(({ access_token }) => this.getUserInfo(access_token))
+        .then(({ access_token }) => {
+          this.SET_PROVIDER('ya')
+          this.getUserData(access_token)
+        })
         .catch((error) => console.log('Обработка ошибки', error))
         .finally(() => (this.dialog = false))
     },
     initVK() {
       const { Connect, Config, ConnectEvents } = window.SuperAppKit
+      const vkId = `${process.env.VK_ID}`
 
-      Config.init({
-        appId: `${process.env.VK_ID}` // идентификатор приложения
-      })
+      if (vkId) {
+        Config.init({
+          appId: +vkId
+        })
 
-      const oneTapButton = Connect.buttonOneTapAuth({
-        // Обязательный параметр в который нужно добавить обработчик событий приходящих из SDK
-        callback: function (e) {
-          const type = e.type
+        const oneTapButton = Connect.buttonOneTapAuth({
+          callback: (e) => {
+            this.dialog = false
+            const type = e.type
 
-          if (!type) {
-            return false
-          }
-
-          switch (type) {
-            case ConnectEvents.OneTapAuthEventsSDK.LOGIN_SUCCESS: // = 'VKSDKOneTapAuthLoginSuccess'
-              console.log(e)
+            if (!type) {
               return false
-            // Для этих событий нужно открыть полноценный VK ID чтобы
-            // пользователь дорегистрировался или подтвердил телефон
-            case ConnectEvents.OneTapAuthEventsSDK.FULL_AUTH_NEEDED: //  = 'VKSDKOneTapAuthFullAuthNeeded'
-            case ConnectEvents.OneTapAuthEventsSDK.PHONE_VALIDATION_NEEDED: // = 'VKSDKOneTapAuthPhoneValidationNeeded'
-            case ConnectEvents.ButtonOneTapAuthEventsSDK.SHOW_LOGIN: // = 'VKSDKButtonOneTapAuthShowLogin'
-              return Connect.redirectAuth({ url: 'https://...', state: 'dj29fnsadjsd82...' }) // url - строка с url, на который будет произведён редирект после авторизации.
-            // state - состояние вашего приложение или любая произвольная строка, которая будет добавлена к url после авторизации.
-            // Пользователь перешел по кнопке "Войти другим способом"
-            case ConnectEvents.ButtonOneTapAuthEventsSDK.SHOW_LOGIN_OPTIONS: // = 'VKSDKButtonOneTapAuthShowLoginOptions'
-              // Параметр url: ссылка для перехода после авторизации. Должен иметь https схему. Обязательный параметр.
-              return Connect.redirectAuth({ url: 'https://...' })
+            }
+
+            switch (type) {
+              case ConnectEvents.OneTapAuthEventsSDK.LOGIN_SUCCESS:
+                console.log(e)
+                const { token, user } = e.payload
+                console.log(token, user)
+
+                this.SET_PROVIDER(e.provider)
+                return false
+              // Для этих событий нужно открыть полноценный VK ID чтобы
+              // пользователь дорегистрировался или подтвердил телефон
+              case ConnectEvents.OneTapAuthEventsSDK.FULL_AUTH_NEEDED: //  = 'VKSDKOneTapAuthFullAuthNeeded'
+              case ConnectEvents.OneTapAuthEventsSDK.PHONE_VALIDATION_NEEDED: // = 'VKSDKOneTapAuthPhoneValidationNeeded'
+              case ConnectEvents.ButtonOneTapAuthEventsSDK.SHOW_LOGIN: // = 'VKSDKButtonOneTapAuthShowLogin'
+                return Connect.redirectAuth({ url: 'https://...', state: 'dj29fnsadjsd82...' }) // url - строка с url, на который будет произведён редирект после авторизации.
+              // state - состояние вашего приложение или любая произвольная строка, которая будет добавлена к url после авторизации.
+              // Пользователь перешел по кнопке "Войти другим способом"
+              case ConnectEvents.ButtonOneTapAuthEventsSDK.SHOW_LOGIN_OPTIONS: // = 'VKSDKButtonOneTapAuthShowLoginOptions'
+                // Параметр url: ссылка для перехода после авторизации. Должен иметь https схему. Обязательный параметр.
+                return Connect.redirectAuth({ url: 'https://...' })
+            }
+
+            return false
+          },
+
+          options: {
+            showAlternativeLogin: false,
+            displayMode: 'default',
+            buttonStyles: {
+              borderRadius: 22,
+              backgroundColor: '#0077FF'
+            }
           }
+        })
 
-          return false
-        },
-
-        options: {
-          showAlternativeLogin: false,
-          displayMode: 'default',
-          buttonStyles: {
-            borderRadius: 22,
-            backgroundColor: '#0077FF'
-          }
-        }
-      })
-
-      document.querySelector('#vkId')?.appendChild(oneTapButton.getFrame())
+        document.querySelector('#vkId')?.appendChild(oneTapButton.getFrame())
+      }
     }
   },
   data: () => ({})
