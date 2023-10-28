@@ -43,7 +43,6 @@ export const actions = {
     }
   },
   logout({ commit }) {
-    debugger
     localStorage.removeItem('access_token')
     commit('SET_IS_AUTH', false)
     commit('SET_USER_DATA', null)
