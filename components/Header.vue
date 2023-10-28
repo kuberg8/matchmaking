@@ -6,11 +6,8 @@
     </h1>
 
     <v-btn id="menu-activator" @click="loginHandler" text class="header__login">
-      <v-avatar v-if="isAuth && getUserAvatarId" :class="{ yandex__avatar: provider === 'ya' }">
-        <v-img
-          :class="{ 'yandex__avatar-img': provider === 'ya' }"
-          :src="getAvatar(getUserAvatarId, 'islands-middle')"
-        />
+      <v-avatar v-if="isAuth" :size="isYandex ? null : 42" :class="{ yandex__avatar: isYandex }">
+        <v-img :class="{ 'yandex__avatar-img': isYandex }" :src="userAvatar" />
       </v-avatar>
       <v-avatar v-else>
         <v-icon size="38">mdi-account-circle</v-icon>
@@ -24,7 +21,7 @@
             <v-btn to="account" large text minWidth="100%" class="header__login-item">
               <div class="header__login-account">
                 <v-avatar size="32">
-                  <v-img :src="getAvatar(getUserAvatarId, 'islands-middle')" />
+                  <v-img :src="userAvatar" />
                 </v-avatar>
                 <div>
                   <div>
@@ -73,8 +70,11 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('user', ['getUserAvatarId', 'getUserDisplayName', 'getUserPhone']),
-    ...mapState('user', ['isAuth', 'provide'])
+    ...mapGetters('user', ['userAvatar', 'getUserDisplayName', 'getUserPhone']),
+    ...mapState('user', ['isAuth', 'provider']),
+    isYandex() {
+      return this.provider === 'ya'
+    }
   },
   methods: {
     ...mapActions('user', ['logout']),

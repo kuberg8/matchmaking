@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations } from 'vuex'
+import { mapActions } from 'vuex'
 
 export default {
   props: {
@@ -41,15 +41,14 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('user', ['SET_PROVIDER']),
-    ...mapActions('user', ['getUserData']),
+    ...mapActions('user', ['getUserData', 'setUserData']),
     initYandex() {
       YaSendSuggestToken(`${process.env.REDIRECT_URI}`)
 
       const oauthQueryParams = {
         client_id: `${process.env.CLIENT_ID}`,
         response_type: 'token',
-        redirect_url: ''
+        redirect_url: `${process.env.REDIRECT_URI}`
       }
       const tokenPageOrigin = `${process.env.CLIENT_ID}`
 
@@ -63,10 +62,7 @@ export default {
         buttonIcon: 'ya'
       })
         .then(({ handler }) => handler())
-        .then(({ access_token }) => {
-          this.SET_PROVIDER('ya')
-          this.getUserData(access_token)
-        })
+        .then(({ access_token }) => this.getUserData(access_token))
         .catch((error) => console.log('Обработка ошибки', error))
         .finally(() => (this.dialog = false))
     },
@@ -91,10 +87,8 @@ export default {
             switch (type) {
               case ConnectEvents.OneTapAuthEventsSDK.LOGIN_SUCCESS:
                 console.log(e)
-                const { token, user } = e.payload
-                console.log(token, user)
-
-                this.SET_PROVIDER(e.provider)
+                const { user } = e.payload
+                this.setUserData({ data: user, provider: e.provider })
                 return false
               // Для этих событий нужно открыть полноценный VK ID чтобы
               // пользователь дорегистрировался или подтвердил телефон
