@@ -18,13 +18,10 @@ export default {
     if (token) {
       this.getUserInfo(token)
     }
-
-    // yanedx
-    YaSendSuggestToken(`${process.env.REDIRECT_URI}`)
   },
   methods: {
     ...mapActions('user', ['getUserInfo'])
-  },
+  }
 }
 </script>
 

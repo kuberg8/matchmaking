@@ -19,6 +19,10 @@ export default {
       {
         src: 'https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-token-with-polyfills-latest.js',
         defer: true
+      },
+      {
+        src: 'https://unpkg.com/@vkontakte/superappkit@1.57.0/dist/index-umd.js',
+        defer: true
       }
     ]
   },
@@ -26,7 +30,8 @@ export default {
   env: {
     CLIENT_ID: process.env.CLIENT_ID,
     REDIRECT_URI: process.env.REDIRECT_URI,
-    JWT_SECRET: process.env.JWT_SECRET
+    JWT_SECRET: process.env.JWT_SECRET,
+    VK_ID: process.env.VK_ID
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css

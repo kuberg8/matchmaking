@@ -7,9 +7,7 @@
         <v-card-text>
           <v-row>
             <v-col cols="12"> Через VK ID или Яндекс — как удобно. </v-col>
-            <v-col cols="12">
-              <v-btn rounded large color="primary" minWidth="100%">через VK id</v-btn>
-            </v-col>
+            <v-col id="vkId" cols="12" />
             <v-col id="yandexId" cols="12" />
           </v-row>
         </v-card-text>
@@ -29,26 +27,8 @@ export default {
     }
   },
   mounted() {
-    const oauthQueryParams = {
-      client_id: `${process.env.CLIENT_ID}`,
-      response_type: 'token',
-      redirect_url: ''
-    }
-    const tokenPageOrigin = `${process.env.CLIENT_ID}`
-
-    window.YaAuthSuggest.init(oauthQueryParams, tokenPageOrigin, {
-      view: 'button',
-      parentId: 'yandexId',
-      buttonSize: 'm',
-      buttonView: 'main',
-      buttonTheme: 'light',
-      buttonBorderRadius: '22',
-      buttonIcon: 'ya'
-    })
-      .then(({ handler }) => handler())
-      .then(({ access_token }) => this.getUserInfo(access_token))
-      .catch((error) => console.log('Обработка ошибки', error))
-      .finally(() => this.dialog = false)
+    this.initYandex()
+    this.initVK()
   },
   computed: {
     dialog: {
@@ -61,7 +41,79 @@ export default {
     }
   },
   methods: {
-    ...mapActions('user', ['getUserInfo'])
+    ...mapActions('user', ['getUserInfo']),
+    initYandex() {
+      YaSendSuggestToken(`${process.env.REDIRECT_URI}`)
+
+      const oauthQueryParams = {
+        client_id: `${process.env.CLIENT_ID}`,
+        response_type: 'token',
+        redirect_url: ''
+      }
+      const tokenPageOrigin = `${process.env.CLIENT_ID}`
+
+      window.YaAuthSuggest.init(oauthQueryParams, tokenPageOrigin, {
+        view: 'button',
+        parentId: 'yandexId',
+        buttonSize: 'm',
+        buttonView: 'main',
+        buttonTheme: 'light',
+        buttonBorderRadius: '22',
+        buttonIcon: 'ya'
+      })
+        .then(({ handler }) => handler())
+        .then(({ access_token }) => this.getUserInfo(access_token))
+        .catch((error) => console.log('Обработка ошибки', error))
+        .finally(() => (this.dialog = false))
+    },
+    initVK() {
+      const { Connect, Config, ConnectEvents } = window.SuperAppKit
+
+      Config.init({
+        appId: `${process.env.VK_ID}` // идентификатор приложения
+      })
+
+      const oneTapButton = Connect.buttonOneTapAuth({
+        // Обязательный параметр в который нужно добавить обработчик событий приходящих из SDK
+        callback: function (e) {
+          const type = e.type
+
+          if (!type) {
+            return false
+          }
+
+          switch (type) {
+            case ConnectEvents.OneTapAuthEventsSDK.LOGIN_SUCCESS: // = 'VKSDKOneTapAuthLoginSuccess'
+              console.log(e)
+              return false
+            // Для этих событий нужно открыть полноценный VK ID чтобы
+            // пользователь дорегистрировался или подтвердил телефон
+            case ConnectEvents.OneTapAuthEventsSDK.FULL_AUTH_NEEDED: //  = 'VKSDKOneTapAuthFullAuthNeeded'
+            case ConnectEvents.OneTapAuthEventsSDK.PHONE_VALIDATION_NEEDED: // = 'VKSDKOneTapAuthPhoneValidationNeeded'
+            case ConnectEvents.ButtonOneTapAuthEventsSDK.SHOW_LOGIN: // = 'VKSDKButtonOneTapAuthShowLogin'
+              return Connect.redirectAuth({ url: 'https://...', state: 'dj29fnsadjsd82...' }) // url - строка с url, на который будет произведён редирект после авторизации.
+            // state - состояние вашего приложение или любая произвольная строка, которая будет добавлена к url после авторизации.
+            // Пользователь перешел по кнопке "Войти другим способом"
+            case ConnectEvents.ButtonOneTapAuthEventsSDK.SHOW_LOGIN_OPTIONS: // = 'VKSDKButtonOneTapAuthShowLoginOptions'
+              // Параметр url: ссылка для перехода после авторизации. Должен иметь https схему. Обязательный параметр.
+              return Connect.redirectAuth({ url: 'https://...' })
+          }
+
+          return false
+        },
+
+        options: {
+          showAlternativeLogin: false,
+          displayMode: 'default',
+          buttonStyles: {
+            borderRadius: 22,
+            backgroundColor: '#0077FF'
+          }
+        }
+      })
+
+      document.querySelector('#vkId')?.appendChild(oneTapButton.getFrame())
+    }
   },
   data: () => ({})
 }
@@ -87,7 +139,8 @@ export default {
     box-shadow: none !important;
   }
 
-  #yandexId {
+  #yandexId,
+  #vkId {
     max-height: 68px;
   }
 }

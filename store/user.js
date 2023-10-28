@@ -34,7 +34,7 @@ export const actions = {
           Authorization: 'OAuth ' + token
         }
       })
-      localStorage.setItem('access_token', access_token)
+      localStorage.setItem('access_token', token)
       commit('SET_USER_DATA', data)
       commit('SET_IS_AUTH', true)
     } catch (e) {
