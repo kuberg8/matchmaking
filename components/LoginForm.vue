@@ -19,6 +19,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   props: {
     value: {
@@ -44,7 +46,7 @@ export default {
       buttonIcon: 'ya'
     })
       .then(({ handler }) => handler())
-      .then((data) => console.log('Сообщение с токеном', data))
+      .then(({ access_token }) => this.getUserInfo(access_token))
       .catch((error) => console.log('Обработка ошибки', error))
   },
   computed: {
@@ -57,7 +59,9 @@ export default {
       }
     }
   },
-  methods: {},
+  methods: {
+    ...mapActions('user', ['getUserInfo'])
+  },
   data: () => ({})
 }
 </script>

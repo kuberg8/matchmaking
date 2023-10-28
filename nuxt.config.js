@@ -16,13 +16,17 @@ export default {
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
     script: [
       { src: 'https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-with-polyfills-latest.js', defer: true },
-      { src: 'https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-token-with-polyfills-latest.js', defer: true }
+      {
+        src: 'https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-token-with-polyfills-latest.js',
+        defer: true
+      }
     ]
   },
 
   env: {
     CLIENT_ID: process.env.CLIENT_ID,
-    REDIRECT_URI: process.env.REDIRECT_URI
+    REDIRECT_URI: process.env.REDIRECT_URI,
+    JWT_SECRET: process.env.JWT_SECRET
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -38,7 +42,7 @@ export default {
   buildModules: ['@nuxtjs/vuetify'],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: [],
+  modules: ['@nuxtjs/axios'],
 
   vuetify: {
     // customVariables: ['~/assets/variables.scss'],
