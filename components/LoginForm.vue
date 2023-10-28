@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" max-width="400px" contentClass="login__form-dialog" hideOverlay eager>
     <v-card ref="card" class="login__form" light>
-      <div ref="cardContent" class="login__form-content">
+      <div ref="cardContent">
         <v-card-title class="login__form-head"> Войдите в Matchmaking или зарегистрируйтесь </v-card-title>
 
         <v-card-text>
@@ -10,7 +10,7 @@
             <v-col cols="12">
               <v-btn rounded large color="primary" minWidth="100%">через VK id</v-btn>
             </v-col>
-            <v-col id="indexId" cols="12" />
+            <v-col id="yandexId" cols="12" />
           </v-row>
         </v-card-text>
       </div>
@@ -38,7 +38,7 @@ export default {
 
     window.YaAuthSuggest.init(oauthQueryParams, tokenPageOrigin, {
       view: 'button',
-      parentId: 'indexId',
+      parentId: 'yandexId',
       buttonSize: 'm',
       buttonView: 'main',
       buttonTheme: 'light',
@@ -48,6 +48,7 @@ export default {
       .then(({ handler }) => handler())
       .then(({ access_token }) => this.getUserInfo(access_token))
       .catch((error) => console.log('Обработка ошибки', error))
+      .finally(() => this.dialog = false)
   },
   computed: {
     dialog: {
@@ -81,46 +82,13 @@ export default {
     justify-content: center;
   }
 
-  &-row {
-    display: flex;
-    align-items: center;
-    margin: 20px 0;
-    min-width: 100%;
-    column-gap: 15px;
-
-    hr {
-      width: 100%;
-    }
-  }
-
-  &-animation {
-    transform: perspective(600px) rotateY(-180deg);
-  }
-
   &-dialog {
     overflow: visible !important;
     box-shadow: none !important;
   }
 
-  &-content {
-    transition: opacity 0.5s;
-
-    &-reverse {
-      transform: perspective(600px) rotateY(-180deg);
-    }
-  }
-
-  &-link {
-    text-align: right;
-    display: block;
-  }
-
-  fieldset {
-    border-width: 1px !important;
-  }
-
-  .v-card__text {
-    padding-top: 0 !important;
+  #yandexId {
+    max-height: 68px;
   }
 }
 </style>

@@ -30,7 +30,7 @@
 </template>
 
 <script>
-const dialogPages = ['index-Create', 'index-Search']
+const dialogPages = ['index-Create', 'index-Search', 'index-Account']
 const models = [
   {
     type: 'basketball',
@@ -150,17 +150,6 @@ export default {
 }
 .arrow__right {
   right: 10vw;
-}
-
-.yandex__avatar {
-  background: linear-gradient(90deg, #ff5c4d, #eb469f 30%, #8341ef 75%, #3f68f9);
-  padding: 2px;
-
-  &-img {
-    border: 2px solid #fff;
-    max-width: calc(100% - 2px);
-    max-height: calc(100% - 2px);
-  }
 }
 
 .main__dialog {
