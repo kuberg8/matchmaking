@@ -41,7 +41,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('user', ['getUserData', 'setUserData']),
+    ...mapActions('user', ['getYandexUserData', 'setUserData']),
     initYandex() {
       YaSendSuggestToken(`${process.env.REDIRECT_URI}`)
 
@@ -64,7 +64,7 @@ export default {
         .then(({ handler }) => handler())
         .then(({ access_token }) => {
           this.dialog = false
-          this.getUserData(access_token)
+          this.getYandexUserData(access_token)
         })
         .catch((error) => console.log('Обработка ошибки', error))
     },
@@ -89,8 +89,8 @@ export default {
             switch (type) {
               case ConnectEvents.OneTapAuthEventsSDK.LOGIN_SUCCESS:
                 console.log(e) // TODO: remove
-                const { user } = e.payload
-                this.setUserData({ data: user, provider: e.provider })
+                const { user, uuid, token } = e.payload
+                this.setUserData({ data: user, provider: e.provider, uuid, silent_token: token })
                 return false
               // Для этих событий нужно открыть полноценный VK ID чтобы
               // пользователь дорегистрировался или подтвердил телефон
