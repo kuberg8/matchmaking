@@ -5,7 +5,8 @@ import getAvatar from '../utils/getAvatar'
 export const state = () => ({
   isAuth: false,
   provider: null,
-  userData: null
+  userData: null,
+  accessToken: null
 })
 
 export const getters = {
@@ -36,6 +37,9 @@ export const mutations = {
   },
   SET_PROVIDER(state, provider) {
     state.provider = provider
+  },
+  SET_ACCESS_TOKEN(state, accessToken) {
+    state.accessToken = accessToken
   }
 }
 
@@ -63,6 +67,7 @@ export const actions = {
       const v = '5.154'
       let accessToken = access_token
 
+      console.log('getVkUserData-access', !!accessToken)
       if (!accessToken) {
         const res = await fetch(`${vk_url}/auth.exchangeSilentAuthToken`, {
           method: 'POST',
@@ -75,6 +80,7 @@ export const actions = {
         })
         const { response } = await res.json()
         accessToken = response?.access_token
+        console.log('getVkUserData-response', response)
       }
 
       const form = new FormData()
@@ -86,22 +92,26 @@ export const actions = {
         body: form
       })
       const { response: data } = await userInfoRes.json()
-      await dispatch('setUserData', { data, token: accessToken, provider: 'vk' })
+      await dispatch('setUserData', { data, access_token: accessToken, provider: 'vk' })
     } catch (e) {
       dispatch('logout')
       console.error(e)
     }
   },
-  setUserData({ commit }, { data, provider, access_token, silent_token, uuid }) {
-    Cookies.set('access_token', access_token)
-    Cookies.set('provider', provider)
+  setUserData({ commit, dispatch }, { data, provider, access_token, silent_token, uuid }) {
+    access_token && Cookies.set('access_token', access_token)
+    provider && Cookies.set('provider', provider)
     silent_token && Cookies.set('silent_token', silent_token)
     uuid && Cookies.set('uuid', uuid)
-    console.log(commit)
 
-    commit('SET_PROVIDER', provider)
-    commit('SET_USER_DATA', data)
-    commit('SET_IS_AUTH', true)
+    if (data) {
+      commit('SET_ACCESS_TOKEN', access_token)
+      commit('SET_PROVIDER', provider)
+      commit('SET_USER_DATA', data)
+      commit('SET_IS_AUTH', true)
+    } else {
+      dispatch('logout')
+    }
   },
   logout({ commit }) {
     Cookies.remove('access_token')
@@ -111,6 +121,7 @@ export const actions = {
 
     commit('SET_IS_AUTH', false)
     commit('SET_PROVIDER', null)
+    commit('SET_ACCESS_TOKEN', null)
     commit('SET_USER_DATA', null)
   }
 }
