@@ -66,18 +66,8 @@
         <v-col>
           <v-select :items="['начинающие', 'Любители', 'Профи', 'Высшая лига']" label="Уровень"></v-select>
         </v-col>
-        <v-col cols="3" class="main__table-rating">
-          Рейтинг
-          <v-icon
-            v-for="star in 5"
-            :key="star"
-            @click.native="setCurrentRating(star)"
-            @mouseover="rating = star"
-            @mouseleave="rating = currentRating"
-            class="main__table-rating-item"
-          >
-            mdi-star{{ rating >= star ? '' : '-outline' }}
-          </v-icon>
+        <v-col>
+          <v-select :items="['начинающие', 'Любители', 'Профи', 'Высшая лига']" label="Уровень"></v-select>
         </v-col>
       </v-row>
     </div>
@@ -123,8 +113,6 @@ export default {
   data() {
     return {
       defaultMaxCount: 31,
-      currentRating: null,
-      rating: null,
       moreFilter: false,
 
       headers: [
@@ -138,7 +126,6 @@ export default {
         { text: 'Кол-во игроков', value: 'count' },
         { text: 'Возраст', value: 'minAge' },
         { text: 'Место', value: 'place', sortable: false },
-        { text: 'Рейтинг', value: 'rating' },
         { text: 'Уровень', value: 'level' },
         { text: 'Инвентарь', value: 'inventory' }
       ],
@@ -152,7 +139,6 @@ export default {
           minAge: 10,
           maxMage: 15,
           age: 'от 10 до 15 лет',
-          rating: 2,
           level: 1,
           place: 'Стадион горняк',
           inventory: true
@@ -164,7 +150,6 @@ export default {
           count: 12,
           minAge: 18,
           age: 'от 18 лет',
-          rating: 5,
           level: 2,
           place: 'Динамо',
           inventory: false
@@ -188,13 +173,6 @@ export default {
         default:
           return '-'
       }
-    },
-    setCurrentRating(star) {
-      if (this.currentRating == star && star == 1) {
-        this.currentRating = null
-      } else {
-        this.currentRating = star
-      }
     }
   }
 }
@@ -207,19 +185,6 @@ export default {
 
   &-filter {
     margin: 0 15px;
-  }
-
-  &-rating {
-    display: flex;
-    align-items: center;
-
-    &-item {
-      cursor: pointer;
-
-      &:first-of-type {
-        margin-left: 10px;
-      }
-    }
   }
 
   &-ml-auto {

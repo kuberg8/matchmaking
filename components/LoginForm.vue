@@ -149,6 +149,10 @@ export default {
   #yandexId,
   #vkId {
     max-height: 68px;
+
+    iframe {
+      max-height: 44px;
+    }
   }
 }
 </style>
