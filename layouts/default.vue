@@ -8,24 +8,8 @@
 </template>
 
 <script>
-import Cookies from 'js-cookie'
-import { mapState } from 'vuex'
-
 export default {
-  name: 'DefaultLayout',
-  mounted() {
-    const keys = ['access_token', 'provider']
-
-    keys.forEach(key => {
-      if (!Cookies.get(key) && this[key]) {
-        console.log('тут', key)
-        Cookies.set(key, this[key])
-      }
-    })
-  },
-  computed: {
-    ...mapState('user', ['accessToken', 'provider'])
-  }
+  name: 'DefaultLayout'
 }
 </script>
 

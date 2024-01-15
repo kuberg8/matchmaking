@@ -88,7 +88,6 @@ export default {
 
             switch (type) {
               case ConnectEvents.OneTapAuthEventsSDK.LOGIN_SUCCESS:
-                console.log(e) // TODO: remove
                 const { user, uuid, token } = e.payload
                 this.setUserData({ data: user, provider: e.provider, uuid, silent_token: token })
                 return false

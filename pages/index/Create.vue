@@ -22,10 +22,8 @@
               :close-on-content-click="false"
               :nudge-right="40"
               :return-value.sync="date"
-              lazy
               transition="scale-transition"
               offset-y
-              full-width
               min-width="290px"
             >
               <template v-slot:activator="{ on }">
@@ -51,10 +49,8 @@
               :close-on-content-click="false"
               :nudge-right="40"
               :return-value.sync="time"
-              lazy
               transition="scale-transition"
               offset-y
-              full-width
               max-width="290px"
               min-width="290px"
             >
@@ -65,7 +61,6 @@
                 v-if="menu2"
                 v-model="time"
                 format="24hr"
-                full-width
                 @click:minute="$refs.menu2.save(time)"
               ></v-time-picker>
             </v-menu>

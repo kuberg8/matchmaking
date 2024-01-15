@@ -21,10 +21,8 @@
           :close-on-content-click="false"
           :nudge-right="40"
           :return-value.sync="date"
-          lazy
           transition="scale-transition"
           offset-y
-          full-width
           min-width="290px"
         >
           <template v-slot:activator="{ on }">
@@ -45,7 +43,7 @@
       </v-col>
       <v-col>
         <v-autocomplete :items="['0-17', '18-29', '30-54', '54+']" label="Город" />
-        </v-col>
+      </v-col>
       <v-col cols="2" class="main__table-ml-auto main__table-center">
         <v-switch label="Инвентарь"></v-switch>
       </v-col>
