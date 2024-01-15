@@ -14,14 +14,12 @@ import { mapState } from 'vuex'
 export default {
   name: 'DefaultLayout',
   mounted() {
-    const keys = ['access_token', 'provider']
-
-    keys.forEach(key => {
-      if (!Cookies.get(key) && this[key]) {
-        console.log('тут', key)
-        Cookies.set(key, this[key])
-      }
-    })
+    if (!Cookies.get('access_token') && this.accessToken) {
+      Cookies.set('access_token', this.accessToken)
+    }
+    if (!Cookies.get('provider') && this.provider) {
+      Cookies.set('provider', this.provider)
+    }
   },
   computed: {
     ...mapState('user', ['accessToken', 'provider'])
