@@ -67,7 +67,6 @@ export const actions = {
       const v = '5.154'
       let accessToken = access_token
 
-      console.log('getVkUserData-access', !!accessToken)
       if (!accessToken) {
         const res = await fetch(`${vk_url}/auth.exchangeSilentAuthToken`, {
           method: 'POST',
@@ -80,7 +79,6 @@ export const actions = {
         })
         const { response } = await res.json()
         accessToken = response?.access_token
-        console.log('getVkUserData-response', response)
       }
 
       const form = new FormData()
@@ -103,6 +101,8 @@ export const actions = {
     provider && Cookies.set('provider', provider)
     silent_token && Cookies.set('silent_token', silent_token)
     uuid && Cookies.set('uuid', uuid)
+    
+    console.log('setUserData', data, uuid)
 
     if (data) {
       commit('SET_ACCESS_TOKEN', access_token)
