@@ -42,7 +42,13 @@
         </v-menu>
       </v-col>
       <v-col>
-        <v-autocomplete :items="['0-17', '18-29', '30-54', '54+']" label="Город" />
+        <v-autocomplete
+          :items="cities"
+          item-value="city"
+          item-text="city"
+          label="Город"
+          no-data-text="Город не найден"
+        />
       </v-col>
       <v-col cols="2" class="main__table-ml-auto main__table-center">
         <v-switch label="Инвентарь"></v-switch>
@@ -77,6 +83,7 @@
       :loading="loading"
       item-value="name"
       class="main__table"
+      loading-text="Загрузка матчей..."
       :items-per-page="limit"
       :serverItemsLength="totalCount"
       :footer-props="{
@@ -116,13 +123,12 @@
 </template>
 
 <script>
+import cities from '@/utils/cities'
+
 export default {
   props: {
     type: String,
     require: true
-  },
-  async fetch() {
-    this.getEvents()
   },
   data() {
     return {
@@ -142,6 +148,7 @@ export default {
         { text: 'Уровень', value: 'level' },
         { text: 'Инвентарь', value: 'inventory' }
       ],
+      cities,
       matches: [],
 
       search: '',
@@ -171,14 +178,15 @@ export default {
     async getEvents() {
       try {
         this.loading = true
-        const { items, total_count: totalCount } = await this.$axios.$get('events', {
-          params: {
-            page: this.page - 1,
-            limit: this.limit,
-            sort: this.sort,
-            sort_type: this.sortType
-          }
-        })
+
+        const params = {
+          page: this.page - 1,
+          limit: this.limit,
+          sort: this.sort,
+          sort_type: this.sortType
+        }
+
+        const { items, total_count: totalCount } = await this.$axios.$get('events', { params })
         this.matches = items
         this.totalCount = totalCount
       } catch (e) {

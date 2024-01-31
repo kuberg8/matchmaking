@@ -14,7 +14,15 @@
         <v-form ref="createFormRef">
           <v-row>
             <v-col cols="12" sm="6" md="4">
-              <v-autocomplete v-model="city" :rules="required" item-value="city" :items="cities" item-text="city" label="Город" />
+              <v-autocomplete
+                v-model="city"
+                :rules="required"
+                item-value="city"
+                :items="cities"
+                item-text="city"
+                label="Город"
+                no-data-text="Город не найден"
+              />
             </v-col>
             <v-col cols="12" sm="6" md="4">
               <v-menu
@@ -58,7 +66,14 @@
                 min-width="290px"
               >
                 <template v-slot:activator="{ on }">
-                  <v-text-field v-model="time" :rules="required" label="Время" append-icon="mdi-clock" readonly v-on="on"></v-text-field>
+                  <v-text-field
+                    v-model="time"
+                    :rules="required"
+                    label="Время"
+                    append-icon="mdi-clock"
+                    readonly
+                    v-on="on"
+                  ></v-text-field>
                 </template>
                 <v-time-picker
                   v-if="timeMenu"
@@ -79,7 +94,14 @@
               />
             </v-col>
             <v-col cols="6">
-              <v-autocomplete v-model="level" :rules="required" item-text="label" item-value="id" :items="levels" label="Уровень" />
+              <v-autocomplete
+                v-model="level"
+                :rules="required"
+                item-text="label"
+                item-value="id"
+                :items="levels"
+                label="Уровень"
+              />
             </v-col>
 
             <v-col cols="6">
