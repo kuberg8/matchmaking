@@ -14,6 +14,7 @@ import { mapState } from 'vuex'
 export default {
   name: 'DefaultLayout',
   mounted() {
+    // set access_token token after vk silent token cose setUserData Cookies.set not work on nuxtInit
     if (!Cookies.get('access_token') && this.accessToken) {
       Cookies.set('access_token', this.accessToken)
     }

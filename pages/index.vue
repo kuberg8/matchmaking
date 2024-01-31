@@ -23,7 +23,7 @@
 
     <v-dialog v-model="dialog" persistent :width="dialogWidth">
       <v-card class="main__dialog">
-        <nuxt-child :type="currentScreen.type" @close="close" />
+        <nuxt-child :type="currentScreen.type" @close="close" keep-alive />
       </v-card>
     </v-dialog>
   </div>

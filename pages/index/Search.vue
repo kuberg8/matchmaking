@@ -36,8 +36,8 @@
           </template>
           <v-date-picker v-model="date" scrollable>
             <v-spacer></v-spacer>
-            <v-btn flat color="primary" @click="menu = false">Cancel</v-btn>
-            <v-btn flat color="primary" @click="$refs.menu.save(date)">OK</v-btn>
+            <v-btn color="primary" @click="menu = false">Cancel</v-btn>
+            <v-btn color="primary" @click="$refs.menu.save(date)">OK</v-btn>
           </v-date-picker>
         </v-menu>
       </v-col>
@@ -74,24 +74,37 @@
       :search="search"
       :headers="headers"
       :items="matches"
+      :loading="loading"
       item-value="name"
       class="main__table"
-      :items-per-page="5"
+      :items-per-page="limit"
+      :serverItemsLength="totalCount"
       :footer-props="{
-        'items-per-page-options': [5, 10]
+        'items-per-page-options': [5, 10],
+        'items-per-page-text': 'Матчей на странице:'
       }"
+      @click:row="rowClick"
+      @update:options="getEventsByOptions"
     >
-      <template v-slot:item.minAge="{ item }"> {{ item.age }} </template>
-      <template v-slot:item.count="{ item }"> {{ item.count }}{{ `/${item.maxCount || defaultMaxCount}` }} </template>
-      <template v-slot:item.level="{ item }">
+      <template #item.place="{ item }">
+        <div class="text-overflow">{{ item.place }}</div>
+      </template>
+      <template #item.time="{ item }">{{ item.time.substring(0, 5) }}</template>
+      <template #item.minAge="{ item }">
+        <span v-if="item.minAge && item.maxAge"> от {{ item.minAge }} до {{ item.maxAge }} </span>
+        <span v-else>-</span>
+      </template>
+      <template #item.count="{ item }">
+        {{ item.memberCount || '-' }}{{ item.memberCount && item.maxMemberCount ? `/${item.maxMemberCount}` : '' }}
+      </template>
+      <template #item.level="{ item }">
         {{ getLevel(item.level) }}
       </template>
-      <template v-slot:item.rating="{ item }">
-        <v-icon v-for="star in item.rating" :key="star" size="13">mdi-star</v-icon>
-      </template>
-      <template v-slot:item.inventory="{ item }">
+      <template #item.inventory="{ item }">
         {{ item.inventory ? 'Имеется' : 'Не имеется' }}
       </template>
+
+      <template slot="no-data"> Матчи не найдены. </template>
     </v-data-table>
 
     <v-card-actions>
@@ -108,55 +121,38 @@ export default {
     type: String,
     require: true
   },
+  async fetch() {
+    this.getEvents()
+  },
   data() {
     return {
-      defaultMaxCount: 31,
       moreFilter: false,
 
       headers: [
         {
           text: 'Город',
-          sortable: false,
-          value: 'name'
+          value: 'city',
+          sortable: false
         },
+        { text: 'Место', value: 'place', sortable: false },
         { text: 'Дата', value: 'date' },
         { text: 'Время', value: 'time' },
-        { text: 'Кол-во игроков', value: 'count' },
-        { text: 'Возраст', value: 'minAge' },
-        { text: 'Место', value: 'place', sortable: false },
+        { text: 'Кол-во игроков', value: 'count', sortable: false },
+        { text: 'Возраст', value: 'minAge', sortable: false },
         { text: 'Уровень', value: 'level' },
         { text: 'Инвентарь', value: 'inventory' }
       ],
-      matches: [
-        {
-          name: 'Учалы',
-          date: new Date().toLocaleString().split(', ')[0],
-          time: new Date().toLocaleString().split(', ')[1],
-          count: 5,
-          maxCount: 12,
-          minAge: 10,
-          maxMage: 15,
-          age: 'от 10 до 15 лет',
-          level: 1,
-          place: 'Стадион горняк',
-          inventory: true
-        },
-        ...new Array(20).fill({
-          name: 'Уфа',
-          date: new Date().toLocaleString().split(', ')[0],
-          time: new Date().toLocaleString().split(', ')[1],
-          count: 12,
-          minAge: 18,
-          age: 'от 18 лет',
-          level: 2,
-          place: 'Динамо',
-          inventory: false
-        })
-      ],
+      matches: [],
 
       search: '',
       menu: false,
-      date: null
+      date: null,
+
+      page: 1,
+      limit: 5,
+      sort: 'date',
+      sortType: 'asc',
+      totalCount: null
     }
   },
   methods: {
@@ -171,12 +167,61 @@ export default {
         default:
           return '-'
       }
+    },
+    async getEvents() {
+      try {
+        this.loading = true
+        const { items, total_count: totalCount } = await this.$axios.$get('events', {
+          params: {
+            page: this.page - 1,
+            limit: this.limit,
+            sort: this.sort,
+            sort_type: this.sortType
+          }
+        })
+        this.matches = items
+        this.totalCount = totalCount
+      } catch (e) {
+        console.error(e)
+      } finally {
+        this.loading = false
+      }
+    },
+    rowClick(e) {
+      console.log(e)
+    },
+    getEventsByOptions({ itemsPerPage, page, sortBy, sortDesc }) {
+      this.page = page
+      this.limit = itemsPerPage
+      this.sort = sortBy[0] || ''
+      this.sortType = sortDesc[0] ? 'desc' : 'asc'
+      this.getEvents()
     }
   }
 }
 </script>
 
+<style lang="scss">
+tr {
+  cursor: pointer;
+}
+
+.v-application .accent--text {
+  color: #1976d2 !important;
+}
+</style>
+
 <style lang="scss" scoped>
+.text-overflow {
+  max-width: 150px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  // white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
 .main__table {
   background: none !important;
   max-height: 80% !important;

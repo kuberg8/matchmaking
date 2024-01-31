@@ -31,7 +31,9 @@ export default {
     CLIENT_ID: process.env.CLIENT_ID,
     REDIRECT_URI: process.env.REDIRECT_URI,
     JWT_SECRET: process.env.JWT_SECRET,
-    VK_ID: process.env.VK_ID
+    VK_ID: process.env.VK_ID,
+
+    BASE_API_URL: process.env.BASE_API_URL
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -48,6 +50,15 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: ['@nuxtjs/axios'],
+
+  axios: {
+    baseURL: `${process.env.BASE_API_URL}`,
+    headers: {
+      common: {
+        Accept: 'application/json'
+      }
+    }
+  },
 
   vuetify: {
     // customVariables: ['~/assets/variables.scss'],
