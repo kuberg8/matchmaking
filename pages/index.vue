@@ -1,12 +1,12 @@
 <template>
-  <div v-if="typeof screnIndex === 'number'">
+  <div v-if="typeof screenIndex === 'number'">
     <Three
-      v-for="(scren, i) in screns"
-      v-show="i === screnIndex"
+      v-for="(screen, i) in screens"
+      v-show="i === screenIndex"
       :key="i"
-      :modelPath="scren.path"
-      :size="scren.size"
-      :background="scren.background"
+      :modelPath="screen.path"
+      :size="screen.size"
+      :background="screen.background"
     />
 
     <div v-if="!dialog" class="controls">
@@ -14,41 +14,44 @@
       <v-btn to="search">Найти</v-btn>
     </div>
 
-    <v-btn v-if="!dialog" class="arrow__left" @click="switchScren(false)" width="65" height="65">
+    <v-btn v-if="!dialog" class="arrow__left" @click="switchScreen(false)" width="65" height="65">
       <v-icon size="42"> mdi-arrow-left </v-icon>
     </v-btn>
-    <v-btn v-if="!dialog" class="arrow__right" @click="switchScren" width="65" height="65">
+    <v-btn v-if="!dialog" class="arrow__right" @click="switchScreen" width="65" height="65">
       <v-icon size="42"> mdi-arrow-right </v-icon>
     </v-btn>
 
     <v-dialog v-model="dialog" persistent :width="dialogWidth">
       <v-card class="main__dialog">
-        <nuxt-child :type="currentScreen.type" @close="close" keep-alive />
+        <nuxt-child :screen="currentScreen" @close="close" />
       </v-card>
     </v-dialog>
   </div>
 </template>
 
 <script>
-const dialogPages = ['index-Create', 'index-Search', 'index-Account']
+const dialogPages = ['index-Create', 'index-Search', 'index-Account', 'index-match-id']
 const models = [
   {
+    id: 1,
     type: 'basketball',
-    path: './models/basketball/scene.gltf',
+    path: '/models/basketball/scene.gltf',
     size: 75,
     background: 'https://cdn.britannica.com/44/193844-050-11485B18/ball-net-basketball-game-arena.jpg'
   },
   {
-    type: 'volleyball',
-    path: './models/volleyball/scene.gltf',
-    size: 95,
-    background: 'https://c1.wallpaperflare.com/preview/788/874/537/network-beach-volleyball-volleyball-sand.jpg'
-  },
-  {
+    id: 2,
     type: 'soccer',
-    path: './models/football/scene.gltf',
+    path: '/models/football/scene.gltf',
     size: 10,
     background: 'https://images.mlssoccer.com/image/private/t_q-best/mls-lafc-prd/k9b0dhvmfqbaqkwl8nvi.jpg'
+  },
+  {
+    id: 3,
+    type: 'volleyball',
+    path: '/models/volleyball/scene.gltf',
+    size: 95,
+    background: 'https://c1.wallpaperflare.com/preview/788/874/537/network-beach-volleyball-volleyball-sand.jpg'
   }
 ]
 
@@ -57,55 +60,70 @@ export default {
   data() {
     return {
       dialog: dialogPages.includes(this.$route.name),
-      screnIndex: null,
-      screns: models
+      screenIndex: null,
+      screens: models
+    }
+  },
+  provide() {
+    return {
+      setScreen: this.setScreen
     }
   },
   computed: {
     currentScreen() {
-      return this.screns[this.screnIndex]
+      return this.screens[this.screenIndex]
     },
     dialogWidth() {
       switch (this.$route.name) {
         case 'index-Create':
           return '900'
+        case 'index-match-id':
+          return '530'
         default:
           return '1024'
       }
     }
   },
   mounted() {
-    this.screnIndex = JSON.parse(localStorage.getItem('screnIndex')) || 0
+    this.screenIndex = JSON.parse(localStorage.getItem('screenIndex')) || 0
 
     window.addEventListener('keydown', ({ key }) => {
       if (!this.dialog) {
         switch (key) {
           case 'ArrowRight':
-            this.switchScren()
+            this.switchScreen()
             break
           case 'ArrowLeft':
-            this.switchScren(false)
+            this.switchScreen(false)
         }
       }
     })
   },
   methods: {
-    switchScren(next = true) {
+    switchScreen(next = true) {
       if (next) {
-        if (this.screnIndex < this.screns.length - 1) {
-          this.screnIndex++
+        if (this.screenIndex < this.screens.length - 1) {
+          this.screenIndex++
         } else {
-          this.screnIndex = 0
+          this.screenIndex = 0
         }
       } else {
-        if (this.screnIndex === 0) {
-          this.screnIndex = this.screns.length - 1
+        if (this.screenIndex === 0) {
+          this.screenIndex = this.screens.length - 1
         } else {
-          this.screnIndex--
+          this.screenIndex--
         }
       }
 
-      localStorage.setItem('screnIndex', this.screnIndex)
+      localStorage.setItem('screenIndex', this.screenIndex)
+    },
+    setScreen(screenId) {
+      const screenIndex = this.screens.findIndex(({ id }) => id === screenId)
+
+      if (screenIndex !== -1) {
+        this.screenIndex = screenIndex
+        localStorage.setItem('screenIndex', this.screenIndex)
+      }
     },
     close() {
       this.dialog = false

@@ -3,7 +3,7 @@
     <v-card-title class="main__dialog-head">
       <span class="text-h5 main__dialog-title"
         >Создание матча
-        <v-icon>mdi-{{ type }}</v-icon>
+        <v-icon>mdi-{{ screen.type }}</v-icon>
       </span>
       <v-btn text class="main__dialog-close" @click="$emit('close')">
         <v-icon> mdi-close </v-icon>
@@ -165,8 +165,8 @@ import cities from '@/utils/cities'
 
 export default {
   props: {
-    type: String,
-    require: true
+    screen: Object,
+    default: () => ({})
   },
   data() {
     return {
@@ -210,7 +210,7 @@ export default {
         // todo: заменить
         country: 'russia',
         eventType: {
-          id: 1
+          id: this.screen.id
         },
         author: {
           id: 1
@@ -219,8 +219,8 @@ export default {
       }
       try {
         this.loading = true
-        await this.$axios.post('events', match)
-        this.$router.push('/')
+        const { id } = await this.$axios.$post('events', match)
+        this.$router.push(`/match/${id}`)
       } catch (e) {
         console.error(e)
       } finally {

@@ -3,7 +3,7 @@
     <v-card-title class="main__dialog-head">
       <span class="text-h5 main__dialog-title"
         >Поиск матча
-        <v-icon>mdi-{{ type }}</v-icon>
+        <v-icon>mdi-{{ screen.type }}</v-icon>
       </span>
       <v-btn text class="main__dialog-close" @click="$emit('close')">
         <v-icon> mdi-close </v-icon>
@@ -43,7 +43,9 @@
       </v-col>
       <v-col>
         <v-autocomplete
+          v-model="city"
           :items="cities"
+          @change="getEvents"
           item-value="city"
           item-text="city"
           label="Город"
@@ -64,13 +66,10 @@
 
     <div v-if="moreFilter">
       <v-row class="main__table-filter">
-        <v-col>
+        <v-col cols="4">
           <v-select :items="['0-17', '18-29', '30-54', '54+']" label="Возраст"></v-select>
         </v-col>
-        <v-col>
-          <v-select :items="['начинающие', 'Любители', 'Профи', 'Высшая лига']" label="Уровень"></v-select>
-        </v-col>
-        <v-col>
+        <v-col cols="4">
           <v-select :items="['начинающие', 'Любители', 'Профи', 'Высшая лига']" label="Уровень"></v-select>
         </v-col>
       </v-row>
@@ -127,8 +126,8 @@ import cities from '@/utils/cities'
 
 export default {
   props: {
-    type: String,
-    require: true
+    screen: Object,
+    default: () => ({})
   },
   data() {
     return {
@@ -148,12 +147,14 @@ export default {
         { text: 'Уровень', value: 'level' },
         { text: 'Инвентарь', value: 'inventory' }
       ],
+      city: null,
       cities,
       matches: [],
 
       search: '',
       menu: false,
       date: null,
+      loading: false,
 
       page: 1,
       limit: 5,
@@ -183,10 +184,11 @@ export default {
           page: this.page - 1,
           limit: this.limit,
           sort: this.sort,
-          sort_type: this.sortType
+          sort_type: this.sortType,
+          city: this.city
         }
 
-        const { items, total_count: totalCount } = await this.$axios.$get('events', { params })
+        const { items, totalCount } = await this.$axios.$get('events', { params })
         this.matches = items
         this.totalCount = totalCount
       } catch (e) {
@@ -196,7 +198,7 @@ export default {
       }
     },
     rowClick(e) {
-      console.log(e)
+      this.$router.push(`/match/${e.id}`)
     },
     getEventsByOptions({ itemsPerPage, page, sortBy, sortDesc }) {
       this.page = page
