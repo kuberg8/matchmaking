@@ -1,30 +1,41 @@
 <template>
-  <div>
+  <div class="pt-8">
+    <v-btn rounded absolute text @click="$router.go(-1)" width="40px" height="40px" class="match__back">
+      <v-icon>mdi-arrow-left</v-icon>
+    </v-btn>
+    <v-btn rounded absolute text @click="$router.push('/')" width="40px" height="40px" class="match__close">
+      <v-icon>mdi-close</v-icon>
+    </v-btn>
     <v-card-text>
-      <div class="d-flex align-center justify-space-between">
-        <h1>
-          {{ city }}
-        </h1>
+      <div class="d-flex align-start justify-space-between">
+        <div>
+          <h1>
+            {{ city }}
+          </h1>
+          <div class="d-flex align-center mt-4">
+            <v-icon size="18" color="error" class="me-2">mdi-alert</v-icon>
+            Extreme Weather Alert
+          </div>
+        </div>
         <b class="text-h5 text-end">
           <div>
+            <v-icon>mdi-calendar-range</v-icon>
             {{ date }}
           </div>
-          <div v-if="time">{{ time.substring(0, 5) }}</div>
+          <div v-if="time">
+            <v-icon>mdi-clock-time-eight-outline</v-icon>
+            {{ time.substring(0, 5) }}
+          </div>
         </b>
-      </div>
-
-      <div class="d-flex align-center">
-        <v-icon size="18" color="error" class="me-2">mdi-alert</v-icon>
-        Extreme Weather Alert
       </div>
     </v-card-text>
 
     <v-card-text class="py-0">
       <v-row align="center" no-gutters>
-        <v-col class="text-h2" cols="6"> 64&deg;F </v-col>
+        <v-col class="text-h2" cols="6"> 15&deg;C </v-col>
 
         <v-col cols="6" class="text-right">
-          <v-icon color="error" size="88"> mdi-weather-hurricane </v-icon>
+          <v-icon size="88"> mdi-{{ screen.type }} </v-icon>
         </v-col>
       </v-row>
     </v-card-text>
@@ -42,7 +53,7 @@
 
       <v-list-item density="compact">
         <v-icon class="mr-2">mdi-account-group</v-icon>
-        <v-list-item-subtitle>{{ users?.length || 0 }}</v-list-item-subtitle>
+        <v-list-item-subtitle>{{ users?.length || 0 }}/{{ maxMemberCount }}</v-list-item-subtitle>
       </v-list-item>
     </div>
 
@@ -80,12 +91,12 @@
         <v-btn v-if="users.length" @click="expand = !expand" class="me-2">
           {{ !expand ? 'Показать участников' : 'Свернуть участников' }}
         </v-btn>
-  
+
         <!-- <v-btn color="primary">
           Участвовать
         </v-btn> -->
         <div class="d-flex">
-          <v-btn color="primary" class="me-2"> Изменить </v-btn>
+          <v-btn color="primary" class="me-2" @click="$router.push(`/edit/${id}`)"> Изменить </v-btn>
           <v-btn color="error" @click="confirm = true"> Удалить игру </v-btn>
         </div>
       </div>
@@ -108,6 +119,10 @@
 
 <script>
 export default {
+  props: {
+    screen: Object,
+    default: () => ({})
+  },
   async asyncData({ $axios, params }) {
     try {
       const data = await $axios.$get(`events/${params.id}`)
@@ -147,5 +162,18 @@ export default {
 <style lang="scss">
 .v-list-item::after {
   display: none;
+}
+
+.match__close {
+  right: 5px;
+  top: 5px;
+  border-radius: 50% !important;
+  min-width: 40px !important;
+}
+.match__back {
+  left: 5px;
+  top: 5px;
+  border-radius: 50% !important;
+  min-width: 40px !important;
 }
 </style>

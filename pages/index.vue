@@ -30,7 +30,7 @@
 </template>
 
 <script>
-const dialogPages = ['index-Create', 'index-Search', 'index-Account', 'index-match-id']
+const dialogPages = ['index-Create', 'index-Search', 'index-Account', 'index-match-id', 'index-edit-id']
 const models = [
   {
     id: 1,
