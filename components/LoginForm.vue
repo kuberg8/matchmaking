@@ -203,7 +203,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('user', ['getYandexUserData', 'getVkUserData']),
+    ...mapActions('user', ['getYandexUserData', 'setUserData']),
     initYandex() {
       YaSendSuggestToken(`${process.env.REDIRECT_URI}`)
 
@@ -250,8 +250,9 @@ export default {
 
             switch (type) {
               case ConnectEvents.OneTapAuthEventsSDK.LOGIN_SUCCESS:
-                const { uuid, token } = e.payload
-                this.getVkUserData({uuid, silent_token: token})
+                const { user, uuid, token } = e.payload
+                // TODO: заменить на запрос на сервер
+                this.setUserData({ data: user, provider: e.provider, uuid, silent_token: token })
                 return false
               // Для этих событий нужно открыть полноценный VK ID чтобы
               // пользователь дорегистрировался или подтвердил телефон

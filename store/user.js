@@ -61,6 +61,7 @@ export const actions = {
       console.error(e)
     }
   },
+  // TODO: заменить на запрос на сервер и возвращать только результат account.getProfileInfo
   async getVkUserData({ dispatch }, { silent_token, access_token, uuid }) {
     try {
       const vk_url = 'https://api.vk.com/method'
