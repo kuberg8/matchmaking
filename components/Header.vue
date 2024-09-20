@@ -142,7 +142,6 @@ export default {
 
 .yandex__avatar {
   &-img {
-    border: 2px solid #fff;
     max-width: calc(100% - 2px);
     max-height: calc(100% - 2px);
   }
