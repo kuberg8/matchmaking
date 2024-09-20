@@ -141,9 +141,6 @@ export default {
 }
 
 .yandex__avatar {
-  background: linear-gradient(90deg, #ff5c4d, #eb469f 30%, #8341ef 75%, #3f68f9);
-  padding: 2px;
-
   &-img {
     border: 2px solid #fff;
     max-width: calc(100% - 2px);

@@ -359,6 +359,8 @@ export default {
 
   &-head {
     justify-content: center;
+    word-break: normal;
+    text-align: center;
   }
 
   &-row {
