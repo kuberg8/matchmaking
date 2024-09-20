@@ -102,7 +102,7 @@ export const actions = {
     silent_token && Cookies.set('silent_token', silent_token)
     uuid && Cookies.set('uuid', uuid)
     
-    console.log('setUserData', data, uuid, access_token)
+    console.log('setUserData', data, uuid)
 
     if (data) {
       commit('SET_ACCESS_TOKEN', access_token)

@@ -250,8 +250,8 @@ export default {
 
             switch (type) {
               case ConnectEvents.OneTapAuthEventsSDK.LOGIN_SUCCESS:
-                const { user, uuid, token } = e.payload
-                this.setUserData({ data: user, provider: e.provider, uuid, silent_token: token })
+                const { uuid, token } = e.payload
+                this.getVkUserData({uuid, silent_token: token})
                 return false
               // Для этих событий нужно открыть полноценный VK ID чтобы
               // пользователь дорегистрировался или подтвердил телефон
