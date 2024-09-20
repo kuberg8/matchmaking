@@ -17,8 +17,6 @@
                   name
                   outlined
                   required
-                  rounded
-                  dense
                   prepend-inner-icon="mdi-account"
                   hide-details
                 />
@@ -34,8 +32,6 @@
                   label="Пароль"
                   :messages="['forgot password']"
                   outlined
-                  dense
-                  rounded
                   @click:append="show1 = !show1"
                 >
                   <template v-slot:message>
@@ -44,7 +40,7 @@
                 </v-text-field>
               </v-col>
               <v-col class="pa-2" cols="12">
-                <v-btn :disabled="!valid" color="primary" large minWidth="100%" rounded @click="validate('loginForm')">
+                <v-btn :disabled="!valid" color="primary" minWidth="100%" rounded @click="validate('loginForm')">
                   Войти
                 </v-btn>
               </v-col>
@@ -69,7 +65,7 @@
         <v-card-text v-show="singup" class="py-0">
           <v-form ref="singupForm" v-model="valid2" lazy-validation>
             <v-row>
-              <v-col cols="12">
+              <v-col class="pa-2" cols="12">
                 <v-text-field
                   v-model="firstName"
                   :rules="[rules.required]"
@@ -77,12 +73,10 @@
                   name="name"
                   outlined
                   required
-                  dense
-                  rounded
                   hide-details
                 />
               </v-col>
-              <v-col cols="12">
+              <v-col class="pa-2" cols="12">
                 <v-text-field
                   v-model="lastName"
                   :rules="[rules.required, rules.min]"
@@ -90,12 +84,10 @@
                   name="lastname"
                   outlined
                   required
-                  dense
-                  rounded
                   hide-details
                 />
               </v-col>
-              <!-- <v-col cols="12">
+              <!-- <v-col class="pa-2" cols="12">
                 <v-text-field
                   v-model="singupEmail"
                   :rules="emailRules"
@@ -103,13 +95,11 @@
                   name="email"
                   outlined
                   required
-                  dense
-                  rounded
                   append-icon="mdi-at"
                   hide-details
                 />
               </v-col> -->
-              <v-col cols="12">
+              <v-col class="pa-2" cols="12">
                 <v-text-field
                   v-model="singupPhone"
                   :rules="[rules.required]"
@@ -119,13 +109,11 @@
                   type="tel"
                   outlined
                   required
-                  dense
-                  rounded
                   hide-details
                   v-mask="'+7 (###) ###-####'"
                 />
               </v-col>
-              <v-col cols="12">
+              <v-col class="pa-2" cols="12">
                 <v-text-field
                   v-model="singupPassword"
                   :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
@@ -136,12 +124,10 @@
                   label="Пароль"
                   outlined
                   hide-details
-                  dense
-                  rounded
                   @click:append="show2 = !show2"
                 />
               </v-col>
-              <v-col cols="12">
+              <v-col class="pa-2" cols="12">
                 <v-text-field
                   v-model="singupPasswordRepeat"
                   :append-icon="show3 ? 'mdi-eye' : 'mdi-eye-off'"
@@ -152,17 +138,14 @@
                   label="Повторите пароль"
                   outlined
                   hide-details
-                  dense
-                  rounded
                   @click:append="show3 = !show3"
                 />
               </v-col>
-              <v-col cols="12">
+              <v-col class="pa-2" cols="12">
                 <v-btn
                   rounded
                   :disabled="!valid2"
                   color="primary"
-                  large
                   minWidth="100%"
                   @click="validate('singupForm')"
                 >
@@ -359,9 +342,13 @@ export default {
   padding: 20px 40px !important;
   transform: rotate3d(0, 0, 0, 0deg);
   transition: all 1s;
-  min-height: 531px !important;
+  min-height: 560px !important;
   box-shadow: none !important;
   display: flex;
+
+  @media (max-width: 768px) {
+    padding: 10px 20px !important;
+  }
 
   &-head {
     justify-content: center;

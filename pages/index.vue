@@ -23,8 +23,8 @@
 
     <v-dialog
       v-model="dialog"
-      persistent
       :width="dialogWidth"
+      :persistent="$route.name !== 'index-Search'"
       :fullscreen="$route.name === 'index-Search'"
       hide-overlay
       :transition="$route.name === 'index-Search' ? 'dialog-bottom-transition' : 'dialog-transition'"
