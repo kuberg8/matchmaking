@@ -40,7 +40,7 @@ export default {
   css: [], //'~/assets/scss/index.scss'
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: ['~/plugins/three.js'],
+  plugins: ['~/plugins/three.js', '~/plugins/v-mask.js'],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -61,7 +61,7 @@ export default {
   },
 
   vuetify: {
-    // customVariables: ['~/assets/variables.scss'],
+    customVariables: ['~/assets/styles/index.scss'],
     theme: {
       dark: true,
       themes: {
