@@ -203,7 +203,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('user', ['getYandexUserData', 'setUserData']),
+    ...mapActions('user', ['getYandexUserData', 'getVkUserData']),
     initYandex() {
       YaSendSuggestToken(`${process.env.REDIRECT_URI}`)
 
