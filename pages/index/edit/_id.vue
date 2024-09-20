@@ -96,7 +96,6 @@
             <v-col cols="6">
               <v-autocomplete
                 v-model="level"
-                :rules="required"
                 item-text="label"
                 item-value="id"
                 :items="levels"

@@ -11,22 +11,24 @@
             <v-row>
               <v-col class="pa-2" cols="12">
                 <v-text-field
-                  v-model="loginEmail"
-                  :rules="loginEmailRules"
-                  label="E-mail"
+                  v-model="phone"
+                  :rules="[rules.required]"
+                  label="Телефон"
                   name
                   outlined
                   required
                   rounded
                   dense
+                  prepend-inner-icon="mdi-account"
                   hide-details
                 />
               </v-col>
               <v-col class="pa-2" cols="12">
                 <v-text-field
                   v-model="loginPassword"
+                  prepend-inner-icon="mdi-lock"
                   :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-                  :rules="[rules.required, rules.min]"
+                  :rules="[rules.required]"
                   :type="show1 ? 'text' : 'password'"
                   name="input-10-1"
                   label="Пароль"
@@ -67,7 +69,7 @@
         <v-card-text v-show="singup" class="py-0">
           <v-form ref="singupForm" v-model="valid2" lazy-validation>
             <v-row>
-              <v-col class="pr-1" cols="6">
+              <v-col cols="12">
                 <v-text-field
                   v-model="firstName"
                   :rules="[rules.required]"
@@ -80,7 +82,7 @@
                   hide-details
                 />
               </v-col>
-              <v-col class="pl-1" cols="6">
+              <v-col cols="12">
                 <v-text-field
                   v-model="lastName"
                   :rules="[rules.required, rules.min]"
@@ -93,25 +95,27 @@
                   hide-details
                 />
               </v-col>
-              <v-col cols="12">
+              <!-- <v-col cols="12">
                 <v-text-field
                   v-model="singupEmail"
-                  :rules="loginEmailRules"
+                  :rules="emailRules"
                   label="E-mail"
                   name="email"
                   outlined
                   required
                   dense
                   rounded
+                  append-icon="mdi-at"
                   hide-details
                 />
-              </v-col>
+              </v-col> -->
               <v-col cols="12">
                 <v-text-field
                   v-model="singupPhone"
                   :rules="[rules.required]"
                   label="Телефон"
                   name="phone"
+                  append-icon="mdi-cellphone"
                   type="tel"
                   outlined
                   required
@@ -127,7 +131,8 @@
                   :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
                   :rules="[rules.required, rules.min]"
                   :type="show2 ? 'text' : 'password'"
-                  name="input-10-1"
+                  name="new-password"
+                  autocomplete="new-password"
                   label="Пароль"
                   outlined
                   hide-details
@@ -142,7 +147,8 @@
                   :append-icon="show3 ? 'mdi-eye' : 'mdi-eye-off'"
                   :rules="[rules.required, rules.min]"
                   :type="show3 ? 'text' : 'password'"
-                  name="input-10-1"
+                  autocomplete="new-password"
+                  name="new-password-repeat"
                   label="Повторите пароль"
                   outlined
                   hide-details
@@ -316,11 +322,10 @@ export default {
     loginPassword: '',
     singupPassword: '',
     singupPasswordRepeat: '',
-    loginEmail: '',
-    singupEmail: '',
+    phone: '',
+    // singupEmail: '',
     singupPhone: '',
-    loginEmailRules: [(v) => !!v || 'Required', (v) => /.+@.+\..+/.test(v) || 'E-mail must be valid'],
-    emailRules: [(v) => !!v || 'Required', (v) => /.+@.+\..+/.test(v) || 'E-mail must be valid'],
+    // emailRules: [(v) => !!v || 'Required', (v) => /.+@.+\..+/.test(v) || 'E-mail must be valid'],
 
     show1: false,
     show2: false,

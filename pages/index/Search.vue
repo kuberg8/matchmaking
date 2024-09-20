@@ -1,128 +1,221 @@
 <template>
   <div>
-    <v-card-title class="main__dialog-head">
-      <span class="text-h5 main__dialog-title"
-        >Поиск матча
-        <v-icon>mdi-{{ screen.type }}</v-icon>
-      </span>
-      <v-btn text class="main__dialog-close" @click="$emit('close')">
-        <v-icon> mdi-close </v-icon>
-      </v-btn>
-    </v-card-title>
-
-    <v-row class="main__table-filter">
-      <v-col cols="3">
-        <v-text-field v-model="search" append-icon="mdi-magnify" label="Поиск" hide-details />
-      </v-col>
-      <v-col cols="3">
-        <v-menu
-          ref="menu"
-          v-model="menu"
-          :close-on-content-click="false"
-          :nudge-right="40"
-          :return-value.sync="date"
-          transition="scale-transition"
-          offset-y
-          min-width="290px"
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field
-              v-model="date"
-              label="Дата"
-              append-icon="mdi-calendar-month"
-              readonly
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker v-model="date" scrollable>
-            <v-spacer></v-spacer>
-            <v-btn color="primary" @click="menu = false">Cancel</v-btn>
-            <v-btn color="primary" @click="$refs.menu.save(date)">OK</v-btn>
-          </v-date-picker>
-        </v-menu>
-      </v-col>
-      <v-col>
-        <v-autocomplete
-          v-model="city"
-          :items="cities"
-          @change="getEvents"
-          item-value="city"
-          item-text="city"
-          label="Город"
-          no-data-text="Город не найден"
-        />
-      </v-col>
-      <v-col cols="2" class="main__table-ml-auto main__table-center">
-        <v-switch label="Инвентарь"></v-switch>
-      </v-col>
-      <v-col cols="1" class="main__table-center">
-        <v-btn @click="moreFilter = !moreFilter" text class="main__table-btn">
-          <v-badge content="2" color="error">
-            <v-icon>mdi-{{ moreFilter ? 'filter-off' : 'filter' }}</v-icon>
-          </v-badge>
+    <div v-if="mode === 'calendar'">
+      <v-toolbar flat>
+        <span class="text-h5 main__dialog-title"
+          >Поиск матча
+          <v-icon>mdi-{{ screen.type }}</v-icon>
+        </span>
+        <v-spacer />
+        <v-btn text class="main__dialog-close" @click="$emit('close')">
+          <v-icon> mdi-close </v-icon>
         </v-btn>
-      </v-col>
-    </v-row>
+      </v-toolbar>
 
-    <div v-if="moreFilter">
-      <v-row class="main__table-filter">
-        <v-col cols="4">
-          <v-select :items="['0-17', '18-29', '30-54', '54+']" label="Возраст"></v-select>
-        </v-col>
-        <v-col cols="4">
-          <v-select :items="['начинающие', 'Любители', 'Профи', 'Высшая лига']" label="Уровень"></v-select>
-        </v-col>
-      </v-row>
+      <v-toolbar flat>
+        <v-btn outlined class="mr-4" color="grey" @click="setToday"> Сегодня </v-btn>
+        <v-btn fab text small color="grey" @click="prevMonth">
+          <v-icon small> mdi-chevron-left </v-icon>
+        </v-btn>
+        <v-btn fab text small color="grey" @click="nextMonth">
+          <v-icon small> mdi-chevron-right </v-icon>
+        </v-btn>
+        <v-toolbar-title v-if="$refs.calendar" class="capitalize-first-letter ml-2">
+          {{ $refs.calendar.title }}
+        </v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-menu bottom right>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn outlined color="grey" v-bind="attrs" v-on="on">
+              <span>{{ typeToLabel[type] }}</span>
+              <v-icon right> mdi-menu-down </v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item @click="type = 'day'">
+              <v-list-item-title>День</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="type = 'week'">
+              <v-list-item-title>Неделя</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="type = 'month'">
+              <v-list-item-title>Месяц</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-toolbar>
+
+
+        <div class="fill-height full-width" style="max-width: 100vw; overflow: auto;">
+          <v-sheet
+            width="100%"
+            :style="{
+              aspectRatio: type === 'month' ? '1 / 1' : null,
+              minWidth: type === 'month' ? '1024px' : null,
+            }"
+          >
+            <v-calendar
+              v-model="focus"
+              ref="calendar"
+              :events="calendar"
+              color="primary"
+              :type="type"
+              @click:event="showEvent"
+              @click:more="viewDay"
+              @click:date="viewDay"
+              @change="updateRange"
+              weekdays="1,2,3,4,5,6,0"
+            />
+          </v-sheet>
+        </div>
     </div>
 
-    <v-data-table
-      :search="search"
-      :headers="headers"
-      :items="matches"
-      :loading="loading"
-      item-value="name"
-      class="main__table"
-      loading-text="Загрузка матчей..."
-      :items-per-page="limit"
-      :serverItemsLength="totalCount"
-      :footer-props="{
-        'items-per-page-options': [5, 10],
-        'items-per-page-text': 'Матчей на странице:'
-      }"
-      @click:row="rowClick"
-      @update:options="getEventsByOptions"
-    >
-      <template #item.place="{ item }">
-        <div class="text-overflow">{{ item.place }}</div>
-      </template>
-      <template #item.time="{ item }">{{ item.time.substring(0, 5) }}</template>
-      <template #item.minAge="{ item }">
-        <span v-if="item.minAge && item.maxAge"> от {{ item.minAge }} до {{ item.maxAge }} </span>
-        <span v-else>-</span>
-      </template>
-      <template #item.count="{ item }">
-        {{ item.memberCount || '-' }}{{ item.memberCount && item.maxMemberCount ? `/${item.maxMemberCount}` : '' }}
-      </template>
-      <template #item.level="{ item }">
-        {{ getLevel(item.level) }}
-      </template>
-      <template #item.inventory="{ item }">
-        {{ item.inventory ? 'Имеется' : 'Не имеется' }}
-      </template>
+    <div v-else>
+      <v-card-title class="main__dialog-head">
+        <span class="text-h5 main__dialog-title"
+          >Поиск матча
+          <v-icon>mdi-{{ screen.type }}</v-icon>
+        </span>
+        <v-btn text class="main__dialog-close" @click="$emit('close')">
+          <v-icon> mdi-close </v-icon>
+        </v-btn>
+      </v-card-title>
 
-      <template slot="no-data"> Матчи не найдены. </template>
-    </v-data-table>
+      <v-row class="main__table-filter">
+        <v-col cols="3">
+          <v-text-field v-model="search" append-icon="mdi-magnify" label="Поиск" hide-details />
+        </v-col>
+        <v-col cols="3">
+          <v-menu
+            ref="menu"
+            v-model="menu"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            :return-value.sync="date"
+            transition="scale-transition"
+            offset-y
+            min-width="290px"
+          >
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                v-model="date"
+                label="Дата"
+                append-icon="mdi-calendar-month"
+                readonly
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker v-model="date" scrollable>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" @click="menu = false">Cancel</v-btn>
+              <v-btn color="primary" @click="$refs.menu.save(date)">OK</v-btn>
+            </v-date-picker>
+          </v-menu>
+        </v-col>
+        <v-col>
+          <v-autocomplete
+            v-model="city"
+            :items="cities"
+            @change="getEvents"
+            item-value="city"
+            item-text="city"
+            label="Город"
+            no-data-text="Город не найден"
+          />
+        </v-col>
+        <v-col cols="2" class="main__table-ml-auto main__table-center">
+          <v-switch label="Инвентарь"></v-switch>
+        </v-col>
+        <v-col cols="1" class="main__table-center">
+          <v-btn @click="moreFilter = !moreFilter" text class="main__table-btn">
+            <v-badge content="2" color="error">
+              <v-icon>mdi-{{ moreFilter ? 'filter-off' : 'filter' }}</v-icon>
+            </v-badge>
+          </v-btn>
+        </v-col>
+      </v-row>
 
-    <v-card-actions>
-      <v-spacer></v-spacer>
-      <v-btn v-if="moreFilter"> Сбросить фильтры </v-btn>
-      <v-btn color="red" @click="$emit('close')"> Отмена </v-btn>
-    </v-card-actions>
+      <div v-if="moreFilter">
+        <v-row class="main__table-filter">
+          <v-col cols="4">
+            <v-select :items="['0-17', '18-29', '30-54', '54+']" label="Возраст"></v-select>
+          </v-col>
+          <v-col cols="4">
+            <v-select :items="['начинающие', 'Любители', 'Профи', 'Высшая лига']" label="Уровень"></v-select>
+          </v-col>
+        </v-row>
+      </div>
+
+      <v-data-table
+        :search="search"
+        :headers="headers"
+        :items="matches"
+        :loading="loading"
+        item-value="name"
+        class="main__table"
+        loading-text="Загрузка матчей..."
+        :items-per-page="limit"
+        :serverItemsLength="totalCount"
+        :footer-props="{
+          'items-per-page-options': [5, 10],
+          'items-per-page-text': 'Матчей на странице:'
+        }"
+        @click:row="rowClick"
+        @update:options="getEventsByOptions"
+      >
+        <template #item.place="{ item }">
+          <div class="text-overflow">{{ item.place }}</div>
+        </template>
+        <template #item.time="{ item }">{{ item.time.substring(0, 5) }}</template>
+        <template #item.minAge="{ item }">
+          <span v-if="item.minAge && item.maxAge"> от {{ item.minAge }} до {{ item.maxAge }} </span>
+          <span v-else>-</span>
+        </template>
+        <template #item.count="{ item }">
+          {{ item.memberCount || '-' }}{{ item.memberCount && item.maxMemberCount ? `/${item.maxMemberCount}` : '' }}
+        </template>
+        <template #item.level="{ item }">
+          {{ getLevel(item.level) }}
+        </template>
+        <template #item.inventory="{ item }">
+          {{ item.inventory ? 'Имеется' : 'Не имеется' }}
+        </template>
+
+        <template slot="no-data"> Матчи не найдены. </template>
+      </v-data-table>
+
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn v-if="moreFilter"> Сбросить фильтры </v-btn>
+        <v-btn color="red" @click="$emit('close')"> Отмена </v-btn>
+      </v-card-actions>
+    </div>
   </div>
 </template>
 
 <script>
 import cities from '@/utils/cities'
+
+const getColor = (type) => {
+  switch (type) {
+    case 1:
+      return '#4caf50'
+    case 2:
+      return '#4050b5'
+    case 3:
+      return '#00bcd4'
+  }
+}
+const getName = (type) => {
+  switch (type) {
+    case 1:
+      return `Баскетбол 🏀`
+    case 2:
+      return 'Футбол ⚽️'
+    case 3:
+      return `Волейбол 🏐`
+  }
+}
 
 export default {
   props: {
@@ -132,6 +225,7 @@ export default {
   data() {
     return {
       moreFilter: false,
+      mode: 'calendar',
 
       headers: [
         {
@@ -150,6 +244,7 @@ export default {
       city: null,
       cities,
       matches: [],
+      calendar: [],
 
       search: '',
       menu: false,
@@ -160,8 +255,23 @@ export default {
       limit: 5,
       sort: 'date',
       sortType: 'asc',
-      totalCount: null
+      totalCount: null,
+
+      focus: '',
+      events: [],
+      colors: ['blue', 'indigo', 'deep-purple', 'cyan', 'green', 'orange', 'grey darken-1'],
+      names: ['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party'],
+
+      type: 'month',
+      typeToLabel: {
+        month: 'Месяц',
+        week: 'Неделя',
+        day: 'День'
+      }
     }
+  },
+  mounted() {
+    this.getEvents()
   },
   methods: {
     getLevel(level) {
@@ -188,8 +298,19 @@ export default {
           city: this.city
         }
 
+        if (this.mode === 'calendar') {
+          // TODO: сделать сортировку по отрезку времени все события за месяц и дергать новые при переключении
+          params.limit = 100
+        }
+
         const { items, totalCount } = await this.$axios.$get('events', { params })
         this.matches = items
+        this.calendar = items.map((e) => ({
+          name: getName(e.eventType.id),
+          start: new Date(`${e.date}T${e.time}`),
+          color: getColor(e.eventType.id),
+          timed: true
+        }))
         this.totalCount = totalCount
       } catch (e) {
         console.error(e)
@@ -206,6 +327,19 @@ export default {
       this.sort = sortBy[0] || ''
       this.sortType = sortDesc[0] ? 'desc' : 'asc'
       this.getEvents()
+    },
+    prevMonth() {
+      this.$refs.calendar.prev()
+    },
+    nextMonth() {
+      this.$refs.calendar.next()
+    },
+    setToday() {
+      this.focus = new Date().toISOString().substring(0, 10)
+    },
+    viewDay({ date }) {
+      this.focus = date
+      this.type = 'day'
     }
   }
 }
@@ -222,6 +356,10 @@ tr {
 </style>
 
 <style lang="scss" scoped>
+.capitalize-first-letter::first-letter {
+  text-transform: uppercase;
+}
+
 .text-overflow {
   max-width: 150px;
   text-overflow: ellipsis;

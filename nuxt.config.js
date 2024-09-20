@@ -1,4 +1,5 @@
 import colors from 'vuetify/es5/util/colors'
+import { ru } from 'date-fns/locale';
 
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -75,6 +76,10 @@ export default {
           success: colors.green.accent3
         }
       }
+    },
+    lang: {
+      locales: { ru },
+      current: 'ru',
     }
   },
 

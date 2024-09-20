@@ -21,7 +21,14 @@
       <v-icon size="42"> mdi-arrow-right </v-icon>
     </v-btn>
 
-    <v-dialog v-model="dialog" persistent :width="dialogWidth">
+    <v-dialog
+      v-model="dialog"
+      persistent
+      :width="dialogWidth"
+      :fullscreen="$route.name === 'index-Search'"
+      hide-overlay
+      :transition="$route.name === 'index-Search' ? 'dialog-bottom-transition' : 'dialog-transition'"
+    >
       <v-card class="main__dialog">
         <nuxt-child :screen="currentScreen" @close="close" />
       </v-card>
@@ -79,8 +86,6 @@ export default {
           return '900'
         case 'index-match-id':
           return '530'
-        default:
-          return '1024'
       }
     }
   },
